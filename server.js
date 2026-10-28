@@ -1,8 +1,5 @@
-Great! Hang on one second. Okay, brilliant. Thanks for waiting. I'm gonna give you the code to copy, then we'll paste it into that box. So, find the code block in our chat, and click its copy button. Then go back to the empty box on GitHub, click inside it, and press Control and V. Tell me when the code appears.
 
-Click **Copy** on the code below. Then return to GitHub, click inside the empty box, and press **Control + V**. Tell me when the code appears.
 
-```javascript
 'use strict';
 const http = require('node:http');
 const crypto = require('node:crypto');
