@@ -1,10 +1,4 @@
-Yep, sure. One sec.
 
-I'm pulling up that server file so you can copy the code.
-
-I've got it. Copy the whole code block and replace everything in your GitHub server.js with it. That still needs to be deployed on Render before it's live.
-
-Copy everything below and replace the contents of your GitHub `server.js` file. The server update still needs to be deployed on Render before it goes live.
 
 ```js
 'use strict';
