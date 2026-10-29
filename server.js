@@ -1,3 +1,12 @@
+Yep, sure. One sec.
+
+I'm pulling up that server file so you can copy the code.
+
+I've got it. Copy the whole code block and replace everything in your GitHub server.js with it. That still needs to be deployed on Render before it's live.
+
+Copy everything below and replace the contents of your GitHub `server.js` file. The server update still needs to be deployed on Render before it goes live.
+
+```js
 'use strict';
 const http=require('node:http'),crypto=require('node:crypto');
 const rooms=new Map(),port=Number(process.env.PORT)||3000, MAX=15;
@@ -14,7 +23,7 @@ http.createServer(async(req,res)=>{try{clean();if(req.method==='OPTIONS')return 
 if(path==='/create'){if(rooms.size>=200)return reply(res,503,{error:'Server is full'});let code;do{code=crypto.randomBytes(3).toString('hex').toUpperCase()}while(rooms.has(code));const r={code,seed:crypto.randomBytes(4).readUInt32LE(),players:new Map(),messages:[],zombies:[],dead:new Set(),cars:[],host:null,worldHost:null,updated:Date.now(),settings:{carSpeed:1,zombieHealth:1,zombieSpeed:1,playerSpeed:1},rule:{mode:'off',minutes:5,next:0}};const p=addPlayer(r,d.name);r.host=p.id;rooms.set(code,r);return reply(res,200,{...p,...snapshot(r)})}
 const r=rooms.get(String(d.code||'').toUpperCase());if(!r)return reply(res,404,{error:'Lobby not found or expired'});if(path==='/join'){if(r.players.size>=MAX)return reply(res,409,{error:'Lobby is full'});const p=addPlayer(r,d.name);r.updated=Date.now();return reply(res,200,{...p,...snapshot(r)})}
 const p=r.players.get(String(d.id||''));if(!p||p.token!==d.token)return reply(res,403,{error:'Player session expired'});p.seen=Date.now();r.updated=Date.now();updateRule(r);if(!r.players.has(p.id))return reply(res,403,{error:'You were removed from the lobby'});
-if(path==='/position'){if(!num(d.x,0,2400)||!num(d.y,0,2400)||!num(d.angle,-200,200))return reply(res,400,{error:'Invalid position'});p.position={x:d.x,y:d.y,angle:d.angle};if(d.resources&&['wood','scrap','food'].every(k=>num(d.resources[k],0,1000000)))p.resources={...d.resources};p.hasReported=true;if(d.isMutant)release(r,p.id);if(!r.worldHost)r.worldHost=p.id;
+if(path==='/position'){if(!num(d.x,0,2400)||!num(d.y,0,2400)||!num(d.angle,-200,200))return reply(res,400,{error:'Invalid position'});p.position={x:d.x,y:d.y,angle:d.angle,shotSeq:Number.isSafeInteger(d.shotSeq)&&d.shotSeq>=0&&d.shotSeq<=1000000000?d.shotSeq:0};if(d.resources&&['wood','scrap','food'].every(k=>num(d.resources[k],0,1000000)))p.resources={...d.resources};p.hasReported=true;if(d.isMutant)release(r,p.id);if(!r.worldHost)r.worldHost=p.id;
 if(!r.cars.length&&Array.isArray(d.cars)&&d.cars.length<=30){for(const c of d.cars)if(typeof c.id==='string'&&/^car-\d+$/.test(c.id)&&num(c.x,0,2400)&&num(c.y,0,2400)&&num(c.a,-20,20))r.cars.push({id:c.id,x:c.x,y:c.y,angle:c.a,level:0,turretAngle:0,seats:[null,null,null,null]})}
 const gunner=r.cars.find(c=>c.seats[1]===p.id);if(gunner&&num(d.turretAngle,-10,10))gunner.turretAngle=d.turretAngle;const driven=r.cars.find(c=>c.seats[0]===p.id);if(driven){driven.x=d.x;driven.y=d.y;if(num(d.carAngle,-100,100))driven.angle=d.carAngle}
 if(p.id===r.worldHost&&Array.isArray(d.zombies)){const previous=new Map(r.zombies.map(z=>[z.id,z]));r.zombies=d.zombies.slice(0,120).filter(z=>z&&typeof z.id==='string'&&z.id.length<=80&&(!r.dead.has(z.id)||previous.has(z.id))&&num(z.x,0,2400)&&num(z.y,0,2400)&&num(z.hp,0,10000)&&num(z.maxhp,0,10000)&&num(z.s,0,10)).map(z=>({id:z.id,x:z.x,y:z.y,hp:Math.min(z.hp,previous.get(z.id)?.hp??z.hp),maxhp:z.maxhp,s:z.s,boss:!!z.boss})).filter(z=>z.hp>=0)}return reply(res,200,snapshot(r))}
@@ -28,3 +37,4 @@ if(path==='/rule'){if(p.id!==r.host)return reply(res,403,{error:'Host only'});if
 if(path==='/leaderboard'){if(p.id!==r.host)return reply(res,403,{error:'Host only'});const players=[...r.players.values()].map(x=>({id:x.id,name:x.name,hasReported:!!x.hasReported,...x.resources,total:x.resources.wood+x.resources.scrap+x.resources.food})).sort((a,b)=>b.total-a.total);return reply(res,200,{players})}
 if(path==='/chat'){const msg=String(d.message||'').trim().slice(0,180);if(!msg)return reply(res,400,{error:'Message is empty'});r.messages.push({name:p.name,text:msg});r.messages=r.messages.slice(-40);return reply(res,200,snapshot(r))}if(path==='/leave'){release(r,p.id);r.players.delete(p.id);if(r.host===p.id)r.host=r.players.keys().next().value||null;if(r.worldHost===p.id)r.worldHost=[...r.players.values()].find(q=>q.position)?.id||null;return reply(res,200,{ok:true})}if(path==='/poll')return reply(res,200,snapshot(r));return reply(res,404,{error:'Not found'});
 }catch(e){if(!res.headersSent)reply(res,400,{error:'Invalid request'})}}).listen(port,'0.0.0.0',()=>console.log('Dead City multiplayer server listening on '+port));
+```
