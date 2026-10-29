@@ -1,6 +1,6 @@
 
 
-```js
+
 'use strict';
 const http=require('node:http'),crypto=require('node:crypto');
 const rooms=new Map(),port=Number(process.env.PORT)||3000, MAX=15;
